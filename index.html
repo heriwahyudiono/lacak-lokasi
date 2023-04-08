@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Lacak Lokasi</title>
+</head>
+<body>
+	<p>Perangkat: <span id="device"></span></p>
+	<p>Latitude: <span id="latitude"></span></p>
+	<p>Longitude: <span id="longitude"></span></p>
+	<p>URL Lokasi: <a id="location-url" href="#" target="_blank"></a></p>
+	<p>IP Address: <span id="ip-address"></span></p>
+
+	<script>
+		let firstLoad = true;
+
+		function getIpAddress() {
+			fetch('https://api.ipify.org/?format=json')
+				.then(response => response.json())
+				.then(data => {
+					const ipAddress = data.ip;
+					document.getElementById("ip-address").innerHTML = ipAddress;
+				})
+				.catch(error => console.error(error));
+		}
+
+		function showPosition(position) {
+			const lat = position.coords.latitude;
+			const lang = position.coords.longitude;
+			const url = "https://www.google.com/maps?q=" + lat + "," + lang;
+			document.getElementById("latitude").innerHTML = lat;
+			document.getElementById("longitude").innerHTML = lang;
+			document.getElementById("location-url").innerHTML = url;
+			document.getElementById("location-url").href = url;
+
+			getIpAddress();
+		}
+
+		function getLocation() {
+			if (navigator.geolocation) {
+				navigator.geolocation.getCurrentPosition(showPosition);
+			} else {
+				alert("Geolocation tidak didukung oleh browser Anda.");
+			}
+		}
+
+		if (firstLoad) {
+			alert("File ini ingin mengakses lokasi Anda.");
+			firstLoad = false;
+		}
+
+		getLocation();
+		setInterval(() => {
+			getLocation();
+		}, 1000);
+
+		const device = navigator.userAgent;
+		document.getElementById("device").innerHTML = device;
+	</script>
+</body>
+</html>
